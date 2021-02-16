@@ -18,7 +18,7 @@ typedef enum
 }EN_DRV_MODES;
 
 void drv_setPwmMode(EN_DRV_MODES select);
-
+/* low lewel */
 
 void drv_writeRegister	(uint8_t regNr, uint16_t bitMask);
 void drv_readRegister	(uint8_t regNr, uint16_t* bitMask);
