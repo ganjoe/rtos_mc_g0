@@ -20,7 +20,7 @@ typedef enum
 	CSAcontrol,
 }
 EN_DRV_ADDR;
-
+/*
 typedef struct
 	{
 	uint16_t shadowRegister[8];
@@ -30,13 +30,13 @@ typedef struct
 TD_DRV83;
 
 typedef struct TD_DRV83 drv83;
-
+*/
 void drv_setPwmMode(EN_DRV_MODES select)
 {
 	uint16_t bitMask = 0;
 
 	drv_readRegister((uint8_t)select, &bitMask);
-/*
+
 	switch (select) {
 		case pwm_1x:
 			utils_set_bit_in_Word(&bitMask, 5, 0);
@@ -59,7 +59,7 @@ void drv_setPwmMode(EN_DRV_MODES select)
 
 			break;
 	}
-	*/
+
 }
 
 void drv_writeRegister	(uint8_t regNr, uint16_t bitMask)
