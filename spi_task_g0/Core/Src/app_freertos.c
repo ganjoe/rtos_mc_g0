@@ -160,9 +160,13 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
-
+for (;;)
+{
+	HAL_UART_Receive_DMA(HUART, (uint8_t*) &readbyte, 1);
 	term_qPrintf(myTxQueueHandle, "hallo welt!");
 	osDelay(250);
+}
+
   /* USER CODE END StartDefaultTask */
 }
 
