@@ -4,7 +4,7 @@
  *  Created on: 18.02.2021
  *      Author: pymd02
  *
- *       Low-Level-Interface
+ *       allgemeines Low-Level-Interface
  *       mit MCU- und Hardwareabhängiger Implementierung
  */
 
