@@ -55,7 +55,7 @@
 #define configENABLE_FPU                         0
 #define configENABLE_MPU                         0
 
-#define configUSE_PREEMPTION                     1
+#define configUSE_PREEMPTION                     0
 #define configSUPPORT_STATIC_ALLOCATION          1
 #define configSUPPORT_DYNAMIC_ALLOCATION         1
 #define configUSE_IDLE_HOOK                      0
@@ -67,6 +67,7 @@
 #define configTOTAL_HEAP_SIZE                    ((size_t)512)
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configUSE_16_BIT_TICKS                   0
+#define configIDLE_SHOULD_YIELD                  0
 #define configUSE_MUTEXES                        1
 #define configQUEUE_REGISTRY_SIZE                8
 #define configCHECK_FOR_STACK_OVERFLOW           2
@@ -92,7 +93,7 @@
 /* CMSIS-RTOS V2 flags */
 #define configUSE_OS2_THREAD_SUSPEND_RESUME  0
 #define configUSE_OS2_THREAD_ENUMERATE       0
-#define configUSE_OS2_EVENTFLAGS_FROM_ISR    1
+#define configUSE_OS2_EVENTFLAGS_FROM_ISR    0
 #define configUSE_OS2_THREAD_FLAGS           0
 #define configUSE_OS2_TIMER                  0
 #define configUSE_OS2_MUTEX                  0
