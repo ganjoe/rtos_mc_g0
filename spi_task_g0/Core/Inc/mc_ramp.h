@@ -40,28 +40,9 @@ Default initalizer for the RMPCNTL object.
                    		  }
 
 /*------------------------------------------------------------------------------
- 	RAMP Controller Macro Definition
+ 	RAMP Controller Function Definition
 ------------------------------------------------------------------------------*/
 
-#define RC_MACRO(v)																	\
-	v.Tmp = v.TargetValue - v.SetpointValue;										\
-/*  0.0000305 is resolution of Q15 */												\
-if (abs(v.Tmp) >= float(0.0000305))				    						\
-{																					\
-	v.RampDelayCount++	;															\
-		if (v.RampDelayCount >= v.RampDelayMax)										\
-		{																			\
-			if (v.TargetValue >= v.SetpointValue)									\
-				v.SetpointValue += float(0.0000305);								\
-			else																	\
-				v.SetpointValue -= float(0.0000305);								\
-																					\
-			v.SetpointValue=floatsat(v.SetpointValue,v.RampHighLimit,v.RampLowLimit);\
-			v.RampDelayCount = 0;													\
-																					\
-		}																			\
-}																					\
-else v.EqualFlag = 0x7FFFFFFF;
 
 void mc_ramp(RMPCNTL ramp)
 {
