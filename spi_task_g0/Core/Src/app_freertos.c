@@ -34,7 +34,7 @@ typedef StaticSemaphore_t osStaticSemaphoreDef_t;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
-uint32_t defaultTaskBuffer[ 128 ];
+uint32_t defaultTaskBuffer[ 64 ];
 osStaticThreadDef_t defaultTaskControlBlock;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
@@ -46,7 +46,7 @@ const osThreadAttr_t defaultTask_attributes = {
 };
 /* Definitions for myTxTask */
 osThreadId_t myTxTaskHandle;
-uint32_t myTxTaskBuffer[ 128 ];
+uint32_t myTxTaskBuffer[ 64 ];
 osStaticThreadDef_t myTxTaskControlBlock;
 const osThreadAttr_t myTxTask_attributes = {
   .name = "myTxTask",
@@ -54,6 +54,18 @@ const osThreadAttr_t myTxTask_attributes = {
   .stack_size = sizeof(myTxTaskBuffer),
   .cb_mem = &myTxTaskControlBlock,
   .cb_size = sizeof(myTxTaskControlBlock),
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for myRxTask */
+osThreadId_t myRxTaskHandle;
+uint32_t myRxTaskBuffer[ 64 ];
+osStaticThreadDef_t myRxTaskControlBlock;
+const osThreadAttr_t myRxTask_attributes = {
+  .name = "myRxTask",
+  .stack_mem = &myRxTaskBuffer[0],
+  .stack_size = sizeof(myRxTaskBuffer),
+  .cb_mem = &myRxTaskControlBlock,
+  .cb_size = sizeof(myRxTaskControlBlock),
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for myRxQueue */
@@ -93,6 +105,7 @@ const osSemaphoreAttr_t myFlagNewString_attributes = {
 
 void StartDefaultTask(void *argument);
 void StartTxTask(void *argument);
+void StartRxTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -146,6 +159,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of myTxTask */
   myTxTaskHandle = osThreadNew(StartTxTask, NULL, &myTxTask_attributes);
+
+  /* creation of myRxTask */
+  myRxTaskHandle = osThreadNew(StartRxTask, NULL, &myRxTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* USER CODE END RTOS_THREADS */
@@ -202,6 +218,24 @@ void StartTxTask(void *argument)
 		}
 
   /* USER CODE END StartTxTask */
+}
+
+/* USER CODE BEGIN Header_StartRxTask */
+/**
+* @brief Function implementing the myRxTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartRxTask */
+void StartRxTask(void *argument)
+{
+  /* USER CODE BEGIN StartRxTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartRxTask */
 }
 
 /* Private application code --------------------------------------------------*/

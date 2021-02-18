@@ -2,7 +2,7 @@
  * newCmdOrder.c
  *
  *  Created on: 07.01.2021
- *      Author: danie
+ *      Author: daniel
  */
 
 #include "newCmdOrder.h"
@@ -66,11 +66,21 @@ void term_lol_setCallback(const char *command, const char *help,
 void cmd_init_callbacks()
     {
     term_lol_setCallback("reset", "mcu reset", "countdown", reset);
-    term_lol_setCallback("settime", "mcu reset", "countdown", settime);
-    term_lol_setCallback("setdate", "mcu reset", "countdown", setdate);
+    term_lol_setCallback("settime", "mcu reset", "time", settime);
+    term_lol_setCallback("setdate", "mcu reset", "date", setdate);
+
+    term_lol_setCallback("pwm", "mc pwm", "Hz uint16", pwm);	//uint16
+    term_lol_setCallback("ramp", "speed ramp", "pu -1,1", ramp);	//vorzeichen für up+ down-
+    term_lol_setCallback("speed", "bemf setpoint", "pu -1,1", speed);	//vorzeichen für cw+ ccw-
+    term_lol_setCallback("mspd", "max bemf", "pu -1,1", mspd);	//vorzeichen für limit+ limit-
+    term_lol_setCallback("init", "mc reinit", "1", init);	//vorzeichen für limit+ limit-
+   // term_lol_setCallback("mspd", "", "", mcc_if_mspd);	//vorzeichen für limit+ limit-
+   // term_lol_setCallback("mspd", "", "", mcc_if_mspd);	//vorzeichen für limit+ limit-
+
+
     }
 /*--------------------------*/
-void term_lol_parse(TD_LINEOBJ *line)
+void cmd_parse_lobj(TD_LINEOBJ *line)
     {
 
     char strbuffer[TD_LINEOBJ_MAX_SSIZE];
@@ -120,6 +130,9 @@ void term_lol_parse(TD_LINEOBJ *line)
 	    }
 	}    //
     }
+/*--------------------------*/
+
+
 /*--------------------------*/
 void reset(int argc, const char **argv)
     {
@@ -206,3 +219,13 @@ void setdate(int argc, const char **argv)
 	term_qPrintf(&myTxQueueHandle, "\r3 argumente DD MM YY\r");
 	}
     }
+/*------------motor control commands--------------*/
+
+/*
+ * void	mcc_if_pwm		(int argc, const char **argv);
+void	mcc_if_ramp		(int argc, const char **argv);
+void	mcc_if_speed	(int argc, const char **argv);
+void	mcc_if_mspd		(int argc, const char **argv);
+void	mcc_if_dir		(int argc, const char **argv);
+void	mcc_if_init		(int argc, const char **argv);
+ */
