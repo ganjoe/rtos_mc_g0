@@ -15,7 +15,7 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "semphr.h"
-
+#include "datatypes.h"
 
 
 /*--------private exportet prototypes---------*/
@@ -62,6 +62,16 @@ typedef struct
 //wrapper for vsnprintf. prints to queue
 void term_qPrintf(osMessageQueueId_t QueueHandle, char *fmt, ...);
 
+BaseType_t dBase_StoreQueue(osMessageQueueId_t QueueHandle, TD_LINEOBJ *line);
+
+void dbase_Make(TD_LINEOBJ *line,
+			const char* filename,
+			const char* string,
+			const char* header,
+			const char* postfix,
+			uint16_t* linenr,
+			const char 	*fmt,
+			... );
 
 /*-----------------------------------------------------------*/
 /*-----------------------------------------------------------*/

@@ -11,7 +11,8 @@
 /* USER CODE BEGIN Includes */
 #include "usart.h"
 #include "terminal.h"
-
+#include "datatypes.h"
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,7 +35,7 @@ typedef StaticSemaphore_t osStaticSemaphoreDef_t;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
-uint32_t defaultTaskBuffer[ 64 ];
+uint32_t defaultTaskBuffer[ 128 ];
 osStaticThreadDef_t defaultTaskControlBlock;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
@@ -46,7 +47,7 @@ const osThreadAttr_t defaultTask_attributes = {
 };
 /* Definitions for myTxTask */
 osThreadId_t myTxTaskHandle;
-uint32_t myTxTaskBuffer[ 64 ];
+uint32_t myTxTaskBuffer[ 128 ];
 osStaticThreadDef_t myTxTaskControlBlock;
 const osThreadAttr_t myTxTask_attributes = {
   .name = "myTxTask",
@@ -58,7 +59,7 @@ const osThreadAttr_t myTxTask_attributes = {
 };
 /* Definitions for myRxTask */
 osThreadId_t myRxTaskHandle;
-uint32_t myRxTaskBuffer[ 64 ];
+uint32_t myRxTaskBuffer[ 128 ];
 osStaticThreadDef_t myRxTaskControlBlock;
 const osThreadAttr_t myRxTask_attributes = {
   .name = "myRxTask",
@@ -90,6 +91,17 @@ const osMessageQueueAttr_t myTxQueue_attributes = {
   .mq_mem = &myTxQueueBuffer,
   .mq_size = sizeof(myTxQueueBuffer)
 };
+/* Definitions for myCmdLineObjQueue */
+osMessageQueueId_t myCmdLineObjQueueHandle;
+uint8_t myCmdLineObjQueueBuffer[ 1 * 64 ];
+osStaticMessageQDef_t myCmdLineObjQueueBlock;
+const osMessageQueueAttr_t myCmdLineObjQueue_attributes = {
+  .name = "myCmdLineObjQueue",
+  .cb_mem = &myCmdLineObjQueueBlock,
+  .cb_size = sizeof(myCmdLineObjQueueBlock),
+  .mq_mem = &myCmdLineObjQueueBuffer,
+  .mq_size = sizeof(myCmdLineObjQueueBuffer)
+};
 /* Definitions for myFlagNewString */
 osSemaphoreId_t myFlagNewStringHandle;
 osStaticSemaphoreDef_t myFlagNewStringHandleControlBlock;
@@ -97,6 +109,14 @@ const osSemaphoreAttr_t myFlagNewString_attributes = {
   .name = "myFlagNewString",
   .cb_mem = &myFlagNewStringHandleControlBlock,
   .cb_size = sizeof(myFlagNewStringHandleControlBlock),
+};
+/* Definitions for myCountNewCmd */
+osSemaphoreId_t myCountNewCmdHandle;
+osStaticSemaphoreDef_t myCountNewCmdControlBlock;
+const osSemaphoreAttr_t myCountNewCmd_attributes = {
+  .name = "myCountNewCmd",
+  .cb_mem = &myCountNewCmdControlBlock,
+  .cb_size = sizeof(myCountNewCmdControlBlock),
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -137,6 +157,9 @@ void MX_FREERTOS_Init(void) {
   /* creation of myFlagNewString */
   myFlagNewStringHandle = osSemaphoreNew(1, 1, &myFlagNewString_attributes);
 
+  /* creation of myCountNewCmd */
+  myCountNewCmdHandle = osSemaphoreNew(8, 8, &myCountNewCmd_attributes);
+
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* USER CODE END RTOS_SEMAPHORES */
 
@@ -149,6 +172,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of myTxQueue */
   myTxQueueHandle = osMessageQueueNew (64, sizeof(uint8_t), &myTxQueue_attributes);
+
+  /* creation of myCmdLineObjQueue */
+  myCmdLineObjQueueHandle = osMessageQueueNew (1, 64, &myCmdLineObjQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* USER CODE END RTOS_QUEUES */
@@ -230,11 +256,46 @@ void StartTxTask(void *argument)
 void StartRxTask(void *argument)
 {
   /* USER CODE BEGIN StartRxTask */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+
+    BaseType_t xStatus;
+    /* Infinite loop */
+    for (;;)
+	{
+	if( xSemaphoreTake( myFlagNewStringHandle, 0)==pdPASS)
+	     {
+	    int ItemsLeft = uxQueueMessagesWaiting( myRxQueueHandle);
+
+	    if (ItemsLeft)
+		{
+		TD_LINEOBJ lobj;
+		char rxbuff[ ItemsLeft];
+
+		memset(rxbuff,'\0',ItemsLeft);
+
+		for (int var = 0; var < ItemsLeft; ++var)
+		    {
+		    uint8_t pvBuffer=0;
+
+		    xQueueReceive( myRxQueueHandle, &pvBuffer, 0);
+
+		    rxbuff[ var ] = pvBuffer;
+
+		    }
+		rxbuff[ ItemsLeft-1 ] = '\0';
+
+
+		dbase_Make( &lobj, strdup("cmd"), strdup(rxbuff), 0, 0, 0, 0);
+
+		xStatus = dBase_StoreQueue( myCmdLineObjQueueHandle, &lobj );
+
+		xSemaphoreGive(myCountNewCmdHandle);
+
+		}
+	    }
+
+	osDelay(1);
+	}
+    //
   /* USER CODE END StartRxTask */
 }
 

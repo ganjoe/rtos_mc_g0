@@ -167,7 +167,7 @@ void settime(int argc, const char **argv)
     	    }
     	else
 	    {
-    	    term_qPrintf(myTxQueueHandle,  "\[parse ok]\r");
+    	    term_qPrintf(myTxQueueHandle,  "\rcmd ok");
 	     time.Hours = h;
 	     time.Minutes = m;
 	     time.Seconds = s;
@@ -180,7 +180,7 @@ void settime(int argc, const char **argv)
 	}
 	else
 	    {
-	      term_qPrintf(myTxQueueHandle, "\rwrong! arguments are DD MM YY. YY>=20\r");
+	      term_qPrintf(myTxQueueHandle, "\r!F anzahl Argumente");
 	    }
 
     }
